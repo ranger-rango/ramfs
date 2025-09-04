@@ -19,6 +19,36 @@ int main()
     // cmds - cd, ls, touch, rm, mkdir, rmdir, exit
     RamFS ramFS;
     string fsCmd;
+    string ramFSAscii = R"(
+ _  .-')     ('-.     _   .-')                .-')    
+( \( -O )   ( OO ).-.( '.( OO )_             ( OO ).  
+ ,------.   / . --. / ,--.   ,--.)  ,------.(_)---\_) 
+ |   /`. '  | \-.  \  |   `.'   |('-| _.---'/    _ |  
+ |  /  | |.-'-'  |  | |         |(OO|(_\    \  :` `.  
+ |  |_.' | \| |_.'  | |  |'.'|  |/  |  '--.  '..`''.) 
+ |  .  '.'  |  .-.  | |  |   |  |\_)|  .--' .-._)   \ 
+ |  |\  \   |  | |  | |  |   |  |  \|  |_)  \       / 
+ `--' '--'  `--' `--' `--'   `--'   `--'     `-----'  
+    )";
+
+    string helpMsg = R"(
+    +-------------------+----------------------------------+
+    | Command           | Usage                            |
+    +-------------------+----------------------------------+
+    | make directory    | mkdir <dir-name>                 |
+    | delete directory  | rmdir <dir-name>                 |
+    | make file         | touch <file-name>                |
+    | delete file / dir | rm <file-name> / <dir-name>      |
+    | navigate to dir   | cd <dir-name>                    |
+    | list contents     | ls <dir-name>                    |
+    | write to file     | write <file-name> <contents>     |
+    | read file         | read <file-name>                 |
+    +-------------------+----------------------------------+
+
+    Notes:
+    - Current directory is represented by `.`  
+    - Parent directory is represented by `..`
+    )";
     unordered_map<string, function< void(const string&, const string&) > > commands = 
     {
         {"cd", [&](const string& path, const string&){ramFS.cd(path.empty() ? "." : path);} },
@@ -29,9 +59,11 @@ int main()
         {"rmdir", [&](const string& path, const string&){ramFS.rmdir(path);} },
         {"write", [&](const string& path, const string& content){ramFS.write(path, content);} },
         {"read", [&](const string& path, const string& content){ramFS.read(path);} },
+        {"help", [&](const string& path, const string&){cout << helpMsg << endl;} },
         {"exit", [&](const string& path, const string&){cout << "Catchya Later:)" << endl; exit(0);} }
     };
 
+    cout << ramFSAscii << endl << endl;
     while (true)
     {
         cout << "--(RamFS)--[" << ramFS.getCurrentDir() << "]--# ";
